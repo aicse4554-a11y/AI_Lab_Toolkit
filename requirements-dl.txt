@@ -1,0 +1,4 @@
+# Everything in requirements.txt plus TensorFlow for the Deep Learning page.
+# TensorFlow needs Python 3.9 - 3.12.
+-r requirements.txt
+tensorflow>=2.15
