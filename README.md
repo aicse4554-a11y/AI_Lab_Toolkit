@@ -11,7 +11,8 @@ system, classifiers, clustering and neural networks. Every page works with built
 | **Expert System** | Rule-Based Expert System | Tick symptoms, see which rules fire and why, add your own rules |
 | **Classifier Lab** | Logistic Regression, Decision Tree, Random Forest, SVM, Evaluation Metrics | Compare 4 models on accuracy / precision / recall / F1, optional cross-validation, confusion matrix, feature importance, live prediction |
 | **Clustering** | K-Means | 2D cluster plot, elbow + silhouette analysis, predict a new point, download labelled data |
-| **Deep Learning** | ANN, CNN | Train an ANN or CNN on MNIST, compare them, predict test digits or your own digit image |
+| **Deep Learning** | ANN, CNN | Train an ANN or CNN on MNIST, compare them, predict test digits, an uploaded digit image, or a photo from your webcam |
+| **Real-World Use Cases** | BFS/DFS, K-Means, Random Forest | Metro route planner that re-routes around closed stations, customer segmentation with marketing actions, and a live fraud monitor that scores a simulated transaction stream in real time |
 
 ## Project structure
 
@@ -24,13 +25,15 @@ AI_Lab_Toolkit/
 │   ├── 2_Expert_System.py
 │   ├── 3_Classifier_Lab.py
 │   ├── 4_Clustering.py
-│   └── 5_Deep_Learning.py
+│   ├── 5_Deep_Learning.py
+│   └── 6_Real_World_Use_Cases.py
 ├── core/                       # Pure logic, no Streamlit (easy to test and reuse)
 │   ├── graph_search.py
 │   ├── expert_system.py
 │   ├── ml_models.py
 │   ├── clustering.py
 │   ├── deep_learning.py
+│   ├── usecases.py             # Metro routing, customer segments, fraud scoring
 │   └── theme.py                # CSS behind the Light / Dark / Auto switch
 ├── tests/test_core.py          # Tests for the core logic
 ├── original_scripts/           # Your ten original lab programs, untouched
@@ -70,6 +73,22 @@ Every page has a **🌗 Theme** switch in the sidebar with three options:
 Streamlit also has its own theme menu (⋮ top-right → Settings → Theme). If you pick a theme there, leave the
 sidebar switch on **Auto** so the two do not fight. To change the default colours permanently, edit
 `.streamlit/config.toml`.
+
+## Real-world use cases
+
+The **Real-World Use Cases** page shows how the lab algorithms are used outside the classroom. The data is simulated
+so it works out of the box:
+
+- **Metro route planner (BFS/DFS)**: pick two stations, close some, and get the new route, number of transfers and
+  estimated time.
+- **Customer segments (K-Means)**: groups customers by spend, visit frequency, basket size and recency, then names
+  each group (for example "Big spenders", "Lapsing customers") with a suggested marketing action. You can upload your
+  own customer CSV.
+- **Live fraud monitor (Random Forest)**: press Start and a stream of card payments is scored every second.
+  Transactions above your threshold are flagged, and you can score a single payment by hand.
+
+To use real data, replace `make_customers` and `sample_transactions` in `core/usecases.py` with your own data source
+(a CSV, database query or payment API) and keep the rest.
 
 ## Using your own data
 

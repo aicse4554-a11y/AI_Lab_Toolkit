@@ -22,20 +22,23 @@ cards = [
     ("pages/3_Classifier_Lab.py", "📊", "Classifier Lab", "Logistic Regression, Decision Tree, Random Forest and SVM compared on accuracy, precision, recall and F1."),
     ("pages/4_Clustering.py", "🎯", "Clustering", "K-Means with a 2D plot, elbow and silhouette analysis, and new-point prediction."),
     ("pages/5_Deep_Learning.py", "🧬", "Deep Learning", "Train an ANN and a CNN on MNIST and test them on your own handwritten digits."),
+    ("pages/6_Real_World_Use_Cases.py", "🌍", "Real-World Use Cases",
+     "Metro re-routing (BFS), customer segments (K-Means) and a live fraud monitor (Random Forest)."),
 ]
-cols = st.columns(len(cards))
-for col, (path, icon, title, text) in zip(cols, cards):
-    with col, st.container(border=True):
-        st.markdown(f"### {icon} {title}")
-        st.write(text)
-        st.page_link(path, label=f"Open {title}")
+for row in (cards[:3], cards[3:]):
+    for col, (path, icon, title, text) in zip(st.columns(3), row):
+        with col, st.container(border=True):
+            st.markdown(f"### {icon} {title}")
+            st.write(text)
+            st.page_link(path, label=f"Open {title}")
 
 st.subheader("How the lab programs map to this app")
 st.table(
     {
         "Lab program": ["BFS, DFS", "Rule-Based Expert System", "Logistic Regression, Decision Tree / Random Forest, SVM, Evaluation Metrics",
-                        "K-Means Clustering", "ANN (Keras), CNN"],
-        "App page": ["Graph Search", "Expert System", "Classifier Lab", "Clustering", "Deep Learning"],
+                        "K-Means Clustering", "ANN (Keras), CNN", "BFS/DFS + K-Means + Random Forest"],
+        "App page": ["Graph Search", "Expert System", "Classifier Lab", "Clustering", "Deep Learning",
+                     "Real-World Use Cases"],
     }
 )
 st.caption("Every page has a panel at the bottom with the original program it is based on (see the `original_scripts/` folder).")

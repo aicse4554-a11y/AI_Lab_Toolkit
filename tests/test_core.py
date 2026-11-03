@@ -12,6 +12,7 @@ from core import expert_system as es
 from core import graph_search as gs
 from core import ml_models as ml
 from core import theme
+from core import usecases as uc
 
 LAB_GRAPH = gs.parse_graph(gs.PRESETS["Tree from the lab (A to F)"])
 
@@ -142,6 +143,44 @@ def test_kmeans_on_iris_and_elbow():
     assert res.projection.shape == (150, 3) and res.centers.shape == (3, 4)
     table = cl.elbow(X, max_k=6)
     assert table["Inertia"].is_monotonic_decreasing and len(table) == 6
+
+
+# -------------------------------------------------------------------- use cases
+def test_metro_graph_is_symmetric_and_closures_remove_stations():
+    g = uc.metro_graph()
+    assert all(a in g[b] for a, nbrs in g.items() for b in nbrs)
+    closed = uc.metro_graph(["Central"])
+    assert "Central" not in closed and all("Central" not in nbrs for nbrs in closed.values())
+
+
+def test_trip_planning_baseline_and_reroute():
+    base = uc.plan_trip("Airport", "Harbor")
+    assert base.stops == 4 and base.transfers == 0 and base.legs[0][0] == "Red"
+    detour = uc.plan_trip("Airport", "Harbor", closed=["Central"])
+    assert "Central" not in detour.path and detour.transfers == 3 and detour.minutes > base.minutes
+    assert uc.plan_trip("Airport", "Harbor", closed=["Old Town"]) is None  # Harbor is only reachable via Old Town
+    assert uc.plan_trip("Airport", "University").stops == 5  # BFS = fewest stops
+    assert uc.plan_trip("Airport", "Airport").stops == 0
+
+
+def test_customer_segments_are_recovered_and_named():
+    data = uc.make_customers(400)
+    assert list(data.columns) == uc.CUSTOMER_COLUMNS and len(data) == 400 and (data > 0).all().all()
+    res = cl.run_kmeans(data, 4)
+    names = uc.name_segments(res.centers)
+    assert sorted(t for t, _ in names.values()) == sorted(
+        ["💎 Big spenders", "😴 Lapsing customers", "🔁 Loyal regulars", "🏷️ Bargain hunters"])
+    generic = uc.name_segments(pd.DataFrame({"a": [1.0, 2.0]}))
+    assert generic[0][0] == "Segment 0"
+
+
+def test_fraud_model_and_live_scoring():
+    fm = uc.train_fraud_model(seed=0)
+    assert fm.metrics["Recall"] > 0.75 and fm.metrics["Precision"] > 0.75
+    batch = uc.sample_transactions(300, 0.2, np.random.default_rng(5))
+    prob = uc.score(fm.model, batch)
+    assert prob.shape == (300,) and ((prob >= 0) & (prob <= 1)).all()
+    assert prob[batch["is_fraud"] == 1].mean() > prob[batch["is_fraud"] == 0].mean() + 0.4
 
 
 # ------------------------------------------------------------------------ theme

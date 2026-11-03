@@ -65,7 +65,7 @@ st.line_chart(history)
 
 # ------------------------------------------------------------------ predictions
 st.subheader("Try it")
-tab_test, tab_upload = st.tabs(["A test-set digit", "Your own digit image"])
+tab_test, tab_upload, tab_cam = st.tabs(["A test-set digit", "Your own digit image", "📷 Live camera"])
 
 with tab_test:
     _, _, x_test, y_test = dl.load_mnist()
@@ -95,5 +95,20 @@ with tab_upload:
         b.image((batch_img[0, :, :, 0] * 255).astype("uint8"), caption="What the model sees (28×28)", width=200)
         c.success(f"Predicted **{int(np.argmax(probs))}** ({probs.max():.1%} confident)")
         c.bar_chart(pd.Series(probs, index=[str(i) for i in range(10)]))
+
+with tab_cam:
+    st.caption("Write a digit in dark ink on white paper, hold it up to your webcam and take a photo. "
+               "The browser will ask for camera permission.")
+    shot = st.camera_input("Take a photo of a digit")
+    if shot is not None:
+        from PIL import Image
+
+        image = Image.open(shot)
+        batch_img = dl.preprocess_image(image)
+        probs = dl.predict_digit(active.model, batch_img)
+        a, b = st.columns(2)
+        b.image((batch_img[0, :, :, 0] * 255).astype("uint8"), caption="What the model sees (28×28)", width=200)
+        a.success(f"Predicted **{int(np.argmax(probs))}** ({probs.max():.1%} confident)")
+        a.bar_chart(pd.Series(probs, index=[str(i) for i in range(10)]))
 
 ui.show_originals("08_ANN_Keras.py", "09_CNN.py")
